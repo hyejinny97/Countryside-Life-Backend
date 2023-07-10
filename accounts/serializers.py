@@ -5,17 +5,25 @@ import django.contrib.auth.password_validation as validators
 
 # 회원가입
 class RegisterUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password = serializers.CharField(style={'input_type': 'password'}, write_only=True, required=True)
+    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True, required=True)
     
     class Meta:
         model = User
-        fields = ('username', 'password', 'nickname')
+        fields = ('username', 'password', 'password2', 'nickname')
 
     def validate_password(self, data):
         validators.validate_password(password=data, user=User)
         return data
+    
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
 
+        return attrs
+    
     def create(self, validated_data):
+        del validated_data['password2']
         user = User.objects.create_user(**validated_data)
         user.is_active = True
         user.save()
