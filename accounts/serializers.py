@@ -34,7 +34,8 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'nickname']
+        fields = ['id', 'username', 'nickname']
+        read_only_fields = ['id']
     
     def update(self, instance, validated_data):
         instance.username = validated_data['username']
