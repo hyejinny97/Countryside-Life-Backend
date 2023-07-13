@@ -32,17 +32,20 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
 # 조회/수정/탈퇴
 class UserSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'nickname']
+        fields = ['id', 'username', 'nickname', 'image']
         read_only_fields = ['id']
     
-    def update(self, instance, validated_data):
-        instance.username = validated_data['username']
-        instance.nickname = validated_data['nickname']
-        instance.save()
+    # def update(self, instance, validated_data):
+    #     instance.username = validated_data['username']
+    #     instance.nickname = validated_data['nickname']
+    #     instance.image = validated_data['image']
+    #     instance.save()
 
-        return instance
+    #     return instance
 
 # 비밀번호 변경
 class ChangePasswordSerializer(serializers.ModelSerializer):

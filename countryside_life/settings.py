@@ -151,6 +151,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Media files (= Upload files)
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -222,4 +227,4 @@ SIMPLE_JWT = {
 # CORS 관련 추가
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000'
                          ,'http://localhost:3000']
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
