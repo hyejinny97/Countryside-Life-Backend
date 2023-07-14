@@ -49,6 +49,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # 생성 App
     'accounts',
+    'community',
     # 외부 패키지
     'corsheaders',
     'rest_framework',
