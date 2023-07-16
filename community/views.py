@@ -1,0 +1,107 @@
+from django.db.models.query import prefetch_related_objects
+from .models import Article, Comment
+from .serializers import ArticleSerializer, CommentSerializer, LikeSerializer, serializers
+from .pagination import PageNation
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView, ListAPIView
+
+# 게시물 생성/조회/수정/삭제
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    pagination_class = PageNation
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        if instance.user != request.user: raise serializers.ValidationError('게시글 작성자만 수정 가능합니다.')
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if queryset._prefetch_related_lookups:
+            instance._prefetched_objects_cache = {}
+            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
+
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.user != request.user: raise serializers.ValidationError('게시글 작성자만 삭제 가능합니다.')
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# 댓글 생성/조회/수정/삭제
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, kwargs['article_id'])
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer, article_id):
+        article = Article.objects.get(id=article_id)
+        serializer.save(user=self.request.user, article=article)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        if instance.user != request.user: raise serializers.ValidationError('댓글 작성자만 수정 가능합니다.')
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if queryset._prefetch_related_lookups:
+            instance._prefetched_objects_cache = {}
+            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
+
+        return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.user != request.user: raise serializers.ValidationError('댓글 작성자만 삭제 가능합니다.')
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# 좋아요/좋아요 취소
+class LikeView(CreateAPIView):
+    queryset = Article.objects.all()
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        if request.user in article.like_users.all():
+            article.like_users.remove(request.user) 
+        else:
+            article.like_users.add(request.user)
+
+        serializer = self.get_serializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
