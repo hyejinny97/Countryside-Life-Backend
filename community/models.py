@@ -51,13 +51,13 @@ class ArticleImage(models.Model):
         # MEDIA_ROOT/article_image/<filename> 경로로 업로드
         return f'article_image/{filename}'
 
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='article_images')
     image = models.ImageField(upload_to=article_image_path, blank=True)
 
 
 class Comment(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
