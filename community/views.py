@@ -8,6 +8,8 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.mixins import ListModelMixin
+
 
 # 게시물 생성/조회/수정/삭제
 class ArticleViewSet(viewsets.ModelViewSet):
@@ -105,3 +107,55 @@ class LikeView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
+# 특정 user가 작성한 모든 게시글 조회
+class UserArticlesView(ListAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = PageNation
+
+    def list(self, request, *args, **kwargs):
+        queryset = request.user.article_set.all()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# 특정 user가 작성한 모든 댓글 조회
+class UserCommentsView(ListAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = PageNation
+
+    def list(self, request, *args, **kwargs):
+        queryset = Article.objects.filter(comments__user_id=request.user.pk).distinct()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+
+# 특정 user가 좋아요한 모든 게시글 조회
+class UserLikeArticlesView(ListAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = PageNation
+
+    def list(self, request, *args, **kwargs):
+        queryset = Article.objects.filter(like_users=request.user).distinct()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
