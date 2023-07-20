@@ -24,17 +24,17 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         # 요청에서 필터링 매개변수 가져오기
         category = self.request.query_params.get('category', None)
-        search = self.request.query_params.get('search', None)
+        # search = self.request.query_params.get('search', None)
         region = self.request.query_params.get('region', None)
         
         # 필터링 적용
-        if category:
+        if category and category != '전체':
             queryset = queryset.filter(category=category)
         # elif search:
         #     queryset = queryset.filter(content__icontains=search)
         #     queryset = queryset.filter(title__icontains=search)
 
-        if region:
+        if region and region != '전체':
             queryset = queryset.filter(region=region)
         
         # 정렬 적용
