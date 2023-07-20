@@ -46,7 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False)
     article_images = ArticleImageSerializer(many=True, partial=True, required=False)
-    # comments = CommentSerializer(many=True, partial=True, required=False)
+    comments = CommentSerializer(many=True, partial=True, required=False)
     comments_cnt = serializers.SerializerMethodField()
 
     class Meta:
@@ -60,14 +60,14 @@ class ArticleSerializer(serializers.ModelSerializer):
             'content', 
             'article_images', 
             'like_users',
-            # 'comments',
+            'comments',
             'comments_cnt',
             'created_at', 
             'updated_at',
         ]
         read_only_fields = [
             'id',
-            # 'comments',
+            'comments',
             'comments_cnt',
             'like_users',
             'created_at', 
