@@ -36,7 +36,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         if region and region != '전체':
             queryset = queryset.filter(region=region)
-        
+        print('get_queryset 내 queryset', queryset)
         # 정렬 적용
         ordering = self.request.query_params.get('ordering', 'created_at')
         if ordering == 'created_at':
@@ -49,7 +49,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
-        page = self.paginate_queryset(queryset)
+        page = self.paginate_queryset(queryset) if queryset else None
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
