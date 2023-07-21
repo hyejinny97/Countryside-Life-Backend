@@ -36,7 +36,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         if region and region != '전체':
             queryset = queryset.filter(region=region)
-        print('get_queryset 내 queryset', queryset)
+
         # 정렬 적용
         ordering = self.request.query_params.get('ordering', 'created_at')
         if ordering == 'created_at':
