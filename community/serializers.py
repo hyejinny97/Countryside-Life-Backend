@@ -85,15 +85,34 @@ class ArticleSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         article = Article.objects.create(**validated_data)
-        
+
         files = self.context['request'].FILES
         article_images_data = files.getlist('article_image1') + files.getlist('article_image2') + files.getlist('article_image3')
         for image in article_images_data:
             ArticleImage.objects.create(article=article, image=image)
 
         return article
+   
+    def update(self, instance, validated_data):
+        instance.category = validated_data['category']
+        instance.region = validated_data['region']
+        instance.title = validated_data['title']
+        instance.content = validated_data['content']
+        instance.save()
+        
+        article = Article.objects.get(id=instance.id)
+        imageInstances = ArticleImage.objects.filter(article=article)
+        for imageInstance in imageInstances: 
+            imageInstance.delete()
 
-
+        files = self.context['request'].FILES
+        article_images_data = files.getlist('article_image1') + files.getlist('article_image2') + files.getlist('article_image3')
+        for image in article_images_data:
+            ArticleImage.objects.create(article=article, image=image)
+        
+        return instance
+    
+    
 # 좋아요/좋아요 취소
 class LikeSerializer(serializers.ModelSerializer):
     like_users = serializers.StringRelatedField(many=True)
