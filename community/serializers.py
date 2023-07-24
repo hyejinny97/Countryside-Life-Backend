@@ -85,8 +85,9 @@ class ArticleSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         article = Article.objects.create(**validated_data)
-
-        article_images_data = validated_data.get('article_images', [])
+        
+        files = self.context['request'].FILES
+        article_images_data = files.getlist('article_image1') + files.getlist('article_image2') + files.getlist('article_image3')
         for image in article_images_data:
             ArticleImage.objects.create(article=article, image=image)
 

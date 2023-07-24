@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, ListAPIView
-
+from rest_framework.parsers import MultiPartParser
 
 # 게시물 생성/조회/수정/삭제
 class ArticleViewSet(viewsets.ModelViewSet):
@@ -18,6 +18,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['content', 'title']
     # ordering_fields = ['likes', 'created_at']
+    # parser_classes = (MultiPartParser, )
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -57,6 +58,13 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
