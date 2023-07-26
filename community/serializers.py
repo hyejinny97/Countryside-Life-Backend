@@ -46,7 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False)
     article_images = ArticleImageSerializer(many=True, partial=True, required=False)
-    # comments = CommentSerializer(many=True, partial=True, required=False)
+    comments = CommentSerializer(many=True, partial=True, required=False)
     comments_cnt = serializers.SerializerMethodField()
 
     class Meta:
@@ -60,14 +60,14 @@ class ArticleSerializer(serializers.ModelSerializer):
             'content', 
             'article_images', 
             'like_users',
-            # 'comments',
+            'comments',
             'comments_cnt',
             'created_at', 
             'updated_at',
         ]
         read_only_fields = [
             'id',
-            # 'comments',
+            'comments',
             'comments_cnt',
             'like_users',
             'created_at', 
@@ -86,13 +86,33 @@ class ArticleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         article = Article.objects.create(**validated_data)
 
-        article_images_data = validated_data.get('article_images', [])
+        files = self.context['request'].FILES
+        article_images_data = files.getlist('article_image1') + files.getlist('article_image2') + files.getlist('article_image3')
         for image in article_images_data:
             ArticleImage.objects.create(article=article, image=image)
 
         return article
+   
+    def update(self, instance, validated_data):
+        instance.category = validated_data['category']
+        instance.region = validated_data['region']
+        instance.title = validated_data['title']
+        instance.content = validated_data['content']
+        instance.save()
+        
+        article = Article.objects.get(id=instance.id)
+        imageInstances = ArticleImage.objects.filter(article=article)
+        for imageInstance in imageInstances: 
+            imageInstance.delete()
 
-
+        files = self.context['request'].FILES
+        article_images_data = files.getlist('article_image1') + files.getlist('article_image2') + files.getlist('article_image3')
+        for image in article_images_data:
+            ArticleImage.objects.create(article=article, image=image)
+        
+        return instance
+    
+    
 # 좋아요/좋아요 취소
 class LikeSerializer(serializers.ModelSerializer):
     like_users = serializers.StringRelatedField(many=True)

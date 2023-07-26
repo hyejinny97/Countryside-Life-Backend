@@ -39,7 +39,7 @@ class Article(models.Model):
     like_users = models.ManyToManyField(get_user_model(), related_name='like_articles')
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
     region = models.CharField(max_length=10, choices=REGION_CHOICES)
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=50)
     content = models.TextField(max_length=5000)
     views = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
