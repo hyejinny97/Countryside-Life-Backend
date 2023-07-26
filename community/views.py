@@ -163,7 +163,7 @@ class UserArticlesView(ListAPIView):
     pagination_class = PageNation
 
     def list(self, request, *args, **kwargs):
-        queryset = request.user.article_set.all()
+        queryset = request.user.article_set.all().order_by('-created_at', '-id')
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -181,7 +181,7 @@ class UserCommentsView(ListAPIView):
     pagination_class = PageNation
 
     def list(self, request, *args, **kwargs):
-        queryset = Article.objects.filter(comments__user_id=request.user.pk).distinct()
+        queryset = Article.objects.filter(comments__user_id=request.user.pk).distinct().order_by('-created_at', '-id')
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -199,7 +199,7 @@ class UserLikeArticlesView(ListAPIView):
     pagination_class = PageNation
 
     def list(self, request, *args, **kwargs):
-        queryset = Article.objects.filter(like_users=request.user).distinct()
+        queryset = Article.objects.filter(like_users=request.user).distinct().order_by('-created_at', '-id')
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
