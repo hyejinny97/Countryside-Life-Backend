@@ -23,31 +23,44 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os, json
 from django.core.exceptions import ImproperlyConfigured
-
-secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치를 명시
-
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
-
-def get_secret(setting):
-    try:
-        return secrets[setting]
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-SECRET_KEY = get_secret("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
 from dotenv import load_dotenv
 load_dotenv()
+
+# secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치를 명시
+
+# with open(secret_file) as f:
+#     secrets = json.loads(f.read())
+
+# def get_secret(setting):
+#     try:
+#         return secrets[setting]
+#     except KeyError:
+#         error_msg = "Set the {} environment variable".format(setting)
+#         raise ImproperlyConfigured(error_msg)
+
+# SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+# from dotenv import load_dotenv
+# load_dotenv()
 
 DEBUG = os.environ.get("DEBUG") == "True"
 
 if DEBUG: 
+    print('디버그 트루')
+    # 업로드 이미지 저장
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
+    # 데이터 저장
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:   
+    print('디버그 폴스')
     # S3 secrete key
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
@@ -60,8 +73,23 @@ else:
         AWS_STORAGE_BUCKET_NAME,
         AWS_REGION,
     )
+    # RDS - PostgreSQL
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DATABASE_NAME"), 
+            "USER": "postgres",
+            "PASSWORD": os.environ.get("DATABASE_PASSWORD"), 
+            "HOST": os.environ.get("DATABASE_HOST"), 
+            "PORT": "5432",
+        }
+    }
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'countryside-life.ap-northeast-2.elasticbeanstalk.com',  # Elastic Beanstalk URL
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Application definition
@@ -122,12 +150,12 @@ WSGI_APPLICATION = 'countryside_life.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -172,6 +200,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
 
 # Media files (= Upload files)
 
