@@ -26,64 +26,19 @@ from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 load_dotenv()
 
-# secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치를 명시
-
-# with open(secret_file) as f:
-#     secrets = json.loads(f.read())
-
-# def get_secret(setting):
-#     try:
-#         return secrets[setting]
-#     except KeyError:
-#         error_msg = "Set the {} environment variable".format(setting)
-#         raise ImproperlyConfigured(error_msg)
-
-# SECRET_KEY = get_secret("SECRET_KEY")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# from dotenv import load_dotenv
-# load_dotenv()
-
-DEBUG = os.environ.get("DEBUG") == "True"
-
-if DEBUG: 
-    print('디버그 트루')
-    # 업로드 이미지 저장
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-    # 데이터 저장
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# 업로드 이미지 저장
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+# 데이터 저장
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:   
-    print('디버그 폴스')
-    # S3 secrete key
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-
-    AWS_REGION = "ap-northeast-2"
-    AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
-        AWS_STORAGE_BUCKET_NAME,
-        AWS_REGION,
-    )
-    # RDS - PostgreSQL
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DATABASE_NAME"), 
-            "USER": "postgres",
-            "PASSWORD": os.environ.get("DATABASE_PASSWORD"), 
-            "HOST": os.environ.get("DATABASE_HOST"), 
-            "PORT": "5432",
-        }
-    }
+}
 
 ALLOWED_HOSTS = [
     'countryside-life.ap-northeast-2.elasticbeanstalk.com',  # Elastic Beanstalk URL
