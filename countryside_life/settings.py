@@ -233,6 +233,6 @@ SIMPLE_JWT = {
 # CORS 관련 추가
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000'
                          ,'http://localhost:3000'
-                         ,'https://web-countryside-life-frontend-6w1j2alm605v92.sel5.cloudtype.app/'
+                         ,'https://web-countryside-life-frontend-6w1j2alm605v92.sel5.cloudtype.app'
                          ]
 CORS_ALLOW_CREDENTIALS = True
