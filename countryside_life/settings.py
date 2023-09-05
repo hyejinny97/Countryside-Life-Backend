@@ -41,7 +41,7 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = [
-    'countryside-life.ap-northeast-2.elasticbeanstalk.com',  # Elastic Beanstalk URL
+    'port-0-countryside-life-backend-6w1j2alm5ztssl.sel5.cloudtype.app',  # CloudType URL
     "127.0.0.1",
     "localhost",
 ]
