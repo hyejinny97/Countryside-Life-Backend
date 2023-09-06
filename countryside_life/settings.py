@@ -29,16 +29,32 @@ load_dotenv()
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# 업로드 이미지 저장
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-# 데이터 저장
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DEBUG = os.environ.get("DEBUG") == "True"
+
+if DEBUG == True:
+    # 데이터 저장
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+    # 업로드 이미지 저장
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+else: 
+    # 데이터 저장
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DATABASE_NAME"), 
+            "USER": "root",
+            "PASSWORD": os.environ.get("DATABASE_PASSWORD"), 
+            "HOST": os.environ.get("DATABASE_HOST"), 
+            "PORT": "5432",
+        }
+    }
+
 
 ALLOWED_HOSTS = [
     'port-0-countryside-life-backend-6w1j2alm5ztssl.sel5.cloudtype.app',  # CloudType URL
