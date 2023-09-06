@@ -54,6 +54,9 @@ else:
             "PORT": os.environ.get("DATABASE_PORT"),
         }
     }
+    # 업로드 이미지 저장
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
 
 ALLOWED_HOSTS = [
