@@ -10,7 +10,6 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 # 회원가입
 class RegisterUserView(generics.CreateAPIView):
-    print('겟 유저모델', get_user_model())
     queryset = get_user_model().objects.all()
     serializer_class = RegisterUserSerializer
 
