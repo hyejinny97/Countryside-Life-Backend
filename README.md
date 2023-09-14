@@ -43,10 +43,21 @@
 
 ## 🔧 사용한 기술 스택
 
+- Package Manager: `npm`
+- Hosting Service: `Cloudtype`
+
 ### 🔹 Front-end
 
-JS, React, React-Router, Redux, Redux-Toolkit Query, SCSS
+- Language: `JavaScript`
+- UI 라이브러리: `React`
+- Client-side Routing: `React-Router`
+- Client-State 관리: `Redux`
+- Server-State 관리: `Redux-Toolkit Query`
+- Style: `SCSS`
+- React 개발 환경: `create-react-app`
 
 ### 🔹 Back-end
 
-Python, Django, DRF
+- Language: `Python`
+- Web Framework: `Django`
+- Rest Framework: `DRF`
