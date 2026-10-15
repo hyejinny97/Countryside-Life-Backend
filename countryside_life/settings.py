@@ -48,10 +48,11 @@ else:
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": os.environ.get("DATABASE_NAME"), 
-            "USER": "root",
+            "USER": os.environ["DATABASE_USER"],
             "PASSWORD": os.environ.get("DATABASE_PASSWORD"), 
             "HOST": os.environ.get("DATABASE_HOST"), 
             "PORT": os.environ.get("DATABASE_PORT"),
+            "OPTIONS": {"sslmode": "require"},
         }
     }
     # 업로드 이미지 저장
