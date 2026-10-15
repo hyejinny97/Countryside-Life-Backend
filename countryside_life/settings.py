@@ -60,12 +60,11 @@ else:
     MEDIA_ROOT = BASE_DIR / "media"
 
 
-ALLOWED_HOSTS = [
-    'port-0-countryside-life-backend-6w1j2alm5ztssl.sel5.cloudtype.app',  # CloudType URL
-    "127.0.0.1",
-    "localhost",
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
+RENDER_HOST = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_HOST:
+    ALLOWED_HOSTS.append(RENDER_HOST)
 
 # Application definition
 
@@ -251,8 +250,5 @@ SIMPLE_JWT = {
 }
 
 # CORS 관련 추가
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000'
-                         ,'http://localhost:3000'
-                         ,'https://web-countryside-life-frontend-6w1j2alm605v92.sel5.cloudtype.app'
-                         ]
+CORS_ORIGIN_WHITELIST = [origin for origin in os.environ.get("CORS_ORIGIN_WHITELIST", "").split(",") if origin]
 CORS_ALLOW_CREDENTIALS = True
